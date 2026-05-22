@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Pencil, Trash2, IndianRupee } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, IndianRupee, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { useInvoice, recordPayment, deleteInvoice } from '../../hooks/useInvoices';
 import { useColumns } from '../../hooks/useColumns';
+import { useSettingsValue } from '../../hooks/useSettings';
+import { InvoicePrintView } from '../../components/invoice/InvoicePrintView';
 import { LineItemsTable } from '../../components/invoice/LineItemsTable';
 import { TotalsPanel } from '../../components/invoice/TotalsPanel';
 import { Button } from '../../components/ui/Button';
@@ -14,12 +16,14 @@ import { PageSpinner } from '../../components/ui/Spinner';
 import { useToast } from '../../components/ui/Toast';
 import { formatCurrency } from '../../utils/currency';
 import { formatDate, isOverdue, getDaysOverdue } from '../../utils/dates';
+import { downloadInvoicePDF } from '../../utils/pdf';
 
 export default function InvoiceDetail() {
   const { id }    = useParams<{ id: string }>();
   const navigate  = useNavigate();
   const { toast } = useToast();
   const columns   = useColumns();
+  const settings  = useSettingsValue();
 
   const data = useInvoice(Number(id));
 
@@ -31,6 +35,7 @@ export default function InvoiceDetail() {
 
   const [showDelete,  setShowDelete]  = useState(false);
   const [deleting,    setDeleting]    = useState(false);
+  const [generating,  setGenerating]  = useState(false);
 
   if (data === undefined) return <PageSpinner />;
   if (!data) return <div className="p-6 text-[var(--text-muted)]">Invoice not found.</div>;
@@ -72,8 +77,36 @@ export default function InvoiceDetail() {
     }
   }
 
+  async function handleDownloadPDF() {
+    if (!settings) { toast('error', 'Settings not loaded yet'); return; }
+    setGenerating(true);
+    try {
+      await downloadInvoicePDF(
+        `invoice-print-${invoice.id}`,
+        `${invoice.invoiceNumber}.pdf`
+      );
+      toast('success', 'PDF downloaded');
+    } catch (e: unknown) {
+      toast('error', e instanceof Error ? e.message : 'Could not generate PDF');
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      {/* Hidden print view — captured by html2pdf */}
+      {settings && (
+        <InvoicePrintView
+          id={`invoice-print-${invoice.id}`}
+          invoice={invoice}
+          items={items}
+          payments={payments}
+          columns={columns}
+          settings={settings}
+        />
+      )}
+
       {/* Back */}
       <button
         onClick={() => navigate('/invoices')}
@@ -97,7 +130,16 @@ export default function InvoiceDetail() {
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Download className="w-3.5 h-3.5" />}
+            loading={generating}
+            onClick={handleDownloadPDF}
+          >
+            Download PDF
+          </Button>
           {invoice.status !== 'paid' && (
             <Button
               size="sm"
