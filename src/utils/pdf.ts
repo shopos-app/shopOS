@@ -14,13 +14,15 @@ export function printInvoice(elementId: string, title: string): void {
 <head>
   <meta charset="UTF-8" />
   <title>${title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Google Sans Flex', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #fff;
-      color: #111827;
+      color: #0D1F13;
     }
 
     /* Make the invoice fill the page width on screen */

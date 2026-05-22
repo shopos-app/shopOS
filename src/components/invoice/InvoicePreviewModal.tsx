@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X, Printer } from 'lucide-react';
+import { ArrowLeft, Printer } from 'lucide-react';
 import { InvoicePrintView } from './InvoicePrintView';
 import { Button } from '../ui/Button';
 import type { Invoice, InvoiceItem, Payment, ColumnTemplate, Settings } from '../../db/types';
@@ -58,26 +58,28 @@ export function InvoicePreviewModal({
           marginBottom: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}>
-          <p style={{ color: '#F8FAFC', fontWeight: 600, fontSize: '14px', margin: 0 }}>
-            {invoice.invoiceNumber} — Preview
+          {/* Back button — always visible, especially important for iPad PWA fullscreen */}
+          <button
+            onClick={onClose}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '8px 14px', borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'transparent', cursor: 'pointer',
+              color: '#F8FAFC', fontSize: '14px', fontWeight: 500,
+            }}
+          >
+            <ArrowLeft style={{ width: '16px', height: '16px' }} />
+            Back
+          </button>
+
+          <p style={{ color: '#94A3B8', fontSize: '13px', margin: 0 }}>
+            {invoice.invoiceNumber}
           </p>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <Button icon={<Printer className="w-4 h-4" />} onClick={onPrint}>
-              Print / Save as PDF
-            </Button>
-            <button
-              onClick={onClose}
-              style={{
-                width: '32px', height: '32px', borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.2)',
-                background: 'transparent', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#94A3B8',
-              }}
-            >
-              <X style={{ width: '16px', height: '16px' }} />
-            </button>
-          </div>
+
+          <Button icon={<Printer className="w-4 h-4" />} onClick={onPrint}>
+            Print / Save as PDF
+          </Button>
         </div>
 
         {/* Invoice — rendered visibly so the DOM element can be read by printInvoice */}

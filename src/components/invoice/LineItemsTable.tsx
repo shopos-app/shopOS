@@ -130,10 +130,10 @@ export function LineItemsTable({ columns, items, onChange, readOnly = false }: P
                 ) : (
                   <input
                     type={col.type === 'number' ? 'number' : 'text'}
-                    value={item.customFields[col.key] ?? ''}
+                    value={col.type === 'number' && item.customFields[col.key] === 0 ? '' : (item.customFields[col.key] ?? '')}
                     onChange={e => updateField(
                       idx, col.key,
-                      col.type === 'number' ? Number(e.target.value) : e.target.value
+                      col.type === 'number' ? (e.target.value === '' ? 0 : Number(e.target.value)) : e.target.value
                     )}
                     placeholder={col.type === 'number' ? '0' : ''}
                     className="w-full px-2 py-1.5 rounded-md bg-transparent border border-transparent hover:border-[var(--border)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none text-sm text-[var(--text-primary)] text-right placeholder:text-[var(--text-muted)] transition-colors"

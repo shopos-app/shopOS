@@ -13,6 +13,22 @@ const navItems = [
   { to: '/customers', icon: Users,       label: 'Customers'  },
 ];
 
+function ShopOSLogo() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="9" fill="#E8A020" />
+      {/* Abstract S — two arcs forming a flowing S mark */}
+      <path
+        d="M22 10C22 10 10 10 10 14C10 17 22 15 22 19C22 23 10 22 10 22"
+        stroke="#1B3A2D"
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 export function Sidebar() {
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -24,9 +40,7 @@ export function Sidebar() {
     <aside className="hidden md:flex flex-col w-60 shrink-0 bg-[var(--sidebar-bg)] h-screen sticky top-0">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/10">
-        <div className="w-7 h-7 rounded-lg bg-[var(--sidebar-active)] flex items-center justify-center">
-          <LayoutGrid className="w-4 h-4 text-white" />
-        </div>
+        <ShopOSLogo />
         <span className="text-xl font-bold text-white tracking-tight">ShopOS</span>
       </div>
 
@@ -40,7 +54,7 @@ export function Sidebar() {
             className={({ isActive }) => cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
               isActive
-                ? 'bg-[var(--sidebar-active)] text-white shadow-sm'
+                ? 'bg-[var(--sidebar-active)] text-[#1B3A2D] font-semibold shadow-sm'
                 : 'text-slate-400 hover:bg-white/10 hover:text-white'
             )}
           >
@@ -66,7 +80,7 @@ export function Sidebar() {
           className={({ isActive }) => cn(
             'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
             isActive
-              ? 'bg-[var(--sidebar-active)] text-white'
+              ? 'bg-[var(--sidebar-active)] text-[#1B3A2D] font-semibold'
               : 'text-slate-400 hover:bg-white/10 hover:text-white'
           )}
         >

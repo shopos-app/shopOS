@@ -1,57 +1,69 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ── CSS Variables ── */
 :root {
-  --bg-base: #F8FAFC;
-  --bg-surface: #FFFFFF;
-  --bg-elevated: #F1F5F9;
-  --border: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --primary: #2563EB;
-  --primary-hover: #1D4ED8;
-  --primary-subtle: #DBEAFE;
-  --primary-text: #1E40AF;
-  --success: #16A34A;
+  --bg-base:        #F6F8F6;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #EEF3EF;
+  --border:         #D8E5DA;
+  --border-strong:  #B8CDB9;
+  --text-primary:   #0D1F13;
+  --text-secondary: #3D5C43;
+  --text-muted:     #7A9980;
+
+  --primary:        #2D7255;
+  --primary-hover:  #245F46;
+  --primary-subtle: #D4EDDA;
+  --primary-text:   #1A4F35;
+
+  --success:        #16A34A;
   --success-subtle: #DCFCE7;
-  --warning: #D97706;
+  --warning:        #D97706;
   --warning-subtle: #FEF3C7;
-  --danger: #DC2626;
-  --danger-subtle: #FEE2E2;
-  --neutral: #64748B;
-  --neutral-subtle: #F1F5F9;
-  --sidebar-bg: #1E293B;
-  --sidebar-active: #2563EB;
+  --danger:         #DC2626;
+  --danger-subtle:  #FEE2E2;
+  --neutral:        #5E7A64;
+  --neutral-subtle: #EEF3EF;
+
+  --accent:         #E8A020;
+  --accent-subtle:  #FEF3C7;
+
+  --sidebar-bg:     #1B3A2D;
+  --sidebar-active: #E8A020;
 }
 
 .dark {
-  --bg-base: #0F172A;
-  --bg-surface: #1E293B;
-  --bg-elevated: #334155;
-  --border: #334155;
-  --border-strong: #475569;
-  --text-primary: #F1F5F9;
-  --text-secondary: #CBD5E1;
-  --text-muted: #64748B;
-  --primary: #3B82F6;
-  --primary-hover: #60A5FA;
-  --primary-subtle: #1E3A5F;
-  --primary-text: #93C5FD;
-  --success: #22C55E;
+  --bg-base:        #0E1F16;
+  --bg-surface:     #162A1E;
+  --bg-elevated:    #1F3829;
+  --border:         #2A4A35;
+  --border-strong:  #3D6550;
+  --text-primary:   #E8F5EB;
+  --text-secondary: #A8C9AF;
+  --text-muted:     #5A8063;
+
+  --primary:        #3D9E72;
+  --primary-hover:  #4DB882;
+  --primary-subtle: #1A3D28;
+  --primary-text:   #7DD4A8;
+
+  --success:        #22C55E;
   --success-subtle: #14532D;
-  --warning: #F59E0B;
+  --warning:        #F59E0B;
   --warning-subtle: #451A03;
-  --danger: #EF4444;
-  --danger-subtle: #450A0A;
-  --neutral: #64748B;
-  --neutral-subtle: #1E293B;
-  --sidebar-bg: #0F172A;
-  --sidebar-active: #3B82F6;
+  --danger:         #EF4444;
+  --danger-subtle:  #450A0A;
+  --neutral:        #5A8063;
+  --neutral-subtle: #1F3829;
+
+  --accent:         #E8A020;
+  --accent-subtle:  #3D2800;
+
+  --sidebar-bg:     #0E1F16;
+  --sidebar-active: #E8A020;
 }
 
 /* ── Base ── */
@@ -64,7 +76,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Google Sans Flex', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-base);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
