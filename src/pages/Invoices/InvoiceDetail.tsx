@@ -16,7 +16,7 @@ import { PageSpinner } from '../../components/ui/Spinner';
 import { useToast } from '../../components/ui/Toast';
 import { formatCurrency } from '../../utils/currency';
 import { formatDate, isOverdue, getDaysOverdue } from '../../utils/dates';
-import { downloadInvoicePDF } from '../../utils/pdf';
+import { printInvoice } from '../../utils/pdf';
 
 export default function InvoiceDetail() {
   const { id }    = useParams<{ id: string }>();
@@ -28,7 +28,6 @@ export default function InvoiceDetail() {
   const data = useInvoice(Number(id));
 
   const [showPreview,  setShowPreview]  = useState(false);
-  const [generating,   setGenerating]   = useState(false);
 
   const [showPayment,  setShowPayment]  = useState(false);
   const [payAmt,       setPayAmt]       = useState('');
@@ -79,15 +78,11 @@ export default function InvoiceDetail() {
     }
   }
 
-  async function handleDownloadPDF() {
-    setGenerating(true);
+  function handlePrint() {
     try {
-      await downloadInvoicePDF(`invoice-print-${invoice.id}`, `${invoice.invoiceNumber}.pdf`);
-      toast('success', 'PDF downloaded');
+      printInvoice(`invoice-print-${invoice.id}`, invoice.invoiceNumber);
     } catch (e: unknown) {
-      toast('error', e instanceof Error ? e.message : 'Could not generate PDF');
-    } finally {
-      setGenerating(false);
+      toast('error', e instanceof Error ? e.message : 'Could not open print dialog');
     }
   }
 
@@ -260,8 +255,7 @@ export default function InvoiceDetail() {
         <InvoicePreviewModal
           open={showPreview}
           onClose={() => setShowPreview(false)}
-          onDownload={handleDownloadPDF}
-          generating={generating}
+          onPrint={handlePrint}
           invoice={invoice}
           items={items}
           payments={payments}
