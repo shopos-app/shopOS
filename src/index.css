@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables ── */
+:root {
+  --bg-base: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F1F5F9;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-subtle: #DBEAFE;
+  --primary-text: #1E40AF;
+  --success: #16A34A;
+  --success-subtle: #DCFCE7;
+  --warning: #D97706;
+  --warning-subtle: #FEF3C7;
+  --danger: #DC2626;
+  --danger-subtle: #FEE2E2;
+  --neutral: #64748B;
+  --neutral-subtle: #F1F5F9;
+  --sidebar-bg: #1E293B;
+  --sidebar-active: #2563EB;
+}
+
+.dark {
+  --bg-base: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-elevated: #334155;
+  --border: #334155;
+  --border-strong: #475569;
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+  --primary: #3B82F6;
+  --primary-hover: #60A5FA;
+  --primary-subtle: #1E3A5F;
+  --primary-text: #93C5FD;
+  --success: #22C55E;
+  --success-subtle: #14532D;
+  --warning: #F59E0B;
+  --warning-subtle: #451A03;
+  --danger: #EF4444;
+  --danger-subtle: #450A0A;
+  --neutral: #64748B;
+  --neutral-subtle: #1E293B;
+  --sidebar-bg: #0F172A;
+  --sidebar-active: #3B82F6;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Number formatting ── */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Print styles ── */
+@media print {
+  body > * { display: none !important; }
+  #invoice-print { display: block !important; }
+}
+
+#invoice-print { display: none; }
