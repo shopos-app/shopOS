@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, FileText, CreditCard, Receipt, Bell } from 'lucide-react';
+import { LayoutGrid, FileText, CreditCard, Receipt, Bell, CalendarDays } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useNotifications } from '../../hooks/useNotifications';
 import { NotificationsPanel } from '../notifications/NotificationsPanel';
 
 const navItems = [
-  { to: '/',          icon: LayoutGrid, label: 'Home'     },
-  { to: '/invoices',  icon: FileText,   label: 'Invoices' },
-  { to: '/bills',     icon: CreditCard, label: 'Bills'    },
-  { to: '/expenses',  icon: Receipt,    label: 'Expenses' },
+  { to: '/',          icon: LayoutGrid,   label: 'Home'     },
+  { to: '/invoices',  icon: FileText,     label: 'Invoices' },
+  { to: '/calendar',  icon: CalendarDays, label: 'Calendar' },
+  { to: '/bills',     icon: CreditCard,   label: 'Bills'    },
+  { to: '/expenses',  icon: Receipt,      label: 'Expenses' },
 ];
 
 export function MobileNav() {
@@ -26,7 +27,7 @@ export function MobileNav() {
               to={to}
               end={to === '/'}
               className={({ isActive }) => cn(
-                'flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors min-w-0',
+                'flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-colors min-w-0',
                 isActive ? 'text-[var(--sidebar-active)]' : 'text-slate-500'
               )}
             >
@@ -39,7 +40,7 @@ export function MobileNav() {
           <button
             onClick={() => setPanelOpen(v => !v)}
             className={cn(
-              'flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors relative',
+              'flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-colors relative',
               panelOpen ? 'text-[var(--sidebar-active)]' : 'text-slate-500'
             )}
           >

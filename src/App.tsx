@@ -25,6 +25,7 @@ import GST              from './pages/Settings/GST';
 import Categories       from './pages/Settings/Categories';
 import Appearance       from './pages/Settings/Appearance';
 import Data             from './pages/Settings/Data';
+import CalendarPage     from './pages/Calendar/CalendarPage';
 
 // ── Guard: redirect to onboarding if setup not complete ──
 // getOrCreateSettings() does a conditional write, so we run it once in a
@@ -68,6 +69,7 @@ export default function App() {
               <Route path="invoices/new"      element={<InvoiceNew />} />
               <Route path="invoices/:id"      element={<InvoiceDetail />} />
               <Route path="invoices/:id/edit" element={<InvoiceEdit />} />
+              <Route path="calendar"  element={<CalendarPage />} />
               <Route path="bills"     element={<BillsTracker />} />
               <Route path="expenses"  element={<Expenses />} />
               <Route path="customers"    element={<CustomerList />} />

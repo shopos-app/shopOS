@@ -133,6 +133,15 @@ export interface Bill {
   updatedAt:   Date;
 }
 
+export interface CalendarEvent {
+  id?: number;
+  title: string;
+  date: Date;
+  notes: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ── Computed / derived types ──
 
 export interface CustomerWithStats extends Customer {

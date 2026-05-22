@@ -1,7 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 import type {
   Settings, Customer, Invoice, InvoiceItem,
-  ColumnTemplate, Expense, Payment, Bill,
+  ColumnTemplate, Expense, Payment, Bill, CalendarEvent,
 } from './types';
 
 export class ShopOSDatabase extends Dexie {
@@ -13,6 +13,7 @@ export class ShopOSDatabase extends Dexie {
   expenses!: Table<Expense>;
   payments!: Table<Payment>;
   bills!: Table<Bill>;
+  calendarEvents!: Table<CalendarEvent>;
 
   constructor() {
     super('shopOS_db');
@@ -31,6 +32,10 @@ export class ShopOSDatabase extends Dexie {
     });
     // v3 — adds email backup fields to settings (no schema change, just defaults)
     this.version(3).stores({});
+    // v4 — adds calendar events table
+    this.version(4).stores({
+      calendarEvents: '++id, date',
+    });
   }
 }
 

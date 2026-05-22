@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutGrid, FileText, CreditCard, Receipt, Users, Settings, Sun, Moon, Bell,
+  LayoutGrid, FileText, CreditCard, Receipt, Users, Settings, Sun, Moon, Bell, CalendarDays,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useTheme } from '../../store/theme';
@@ -9,11 +9,12 @@ import { useNotifications } from '../../hooks/useNotifications';
 import { NotificationsPanel } from '../notifications/NotificationsPanel';
 
 const navItems = [
-  { to: '/',          icon: LayoutGrid,  label: 'Dashboard'  },
-  { to: '/invoices',  icon: FileText,    label: 'Invoices'   },
-  { to: '/bills',     icon: CreditCard,  label: 'Bills'      },
-  { to: '/expenses',  icon: Receipt,     label: 'Expenses'   },
-  { to: '/customers', icon: Users,       label: 'Customers'  },
+  { to: '/',          icon: LayoutGrid,   label: 'Dashboard'  },
+  { to: '/invoices',  icon: FileText,     label: 'Invoices'   },
+  { to: '/calendar',  icon: CalendarDays, label: 'Calendar'   },
+  { to: '/bills',     icon: CreditCard,   label: 'Bills'      },
+  { to: '/expenses',  icon: Receipt,      label: 'Expenses'   },
+  { to: '/customers', icon: Users,        label: 'Customers'  },
 ];
 
 function ShopOSLogo() {

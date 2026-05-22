@@ -2,7 +2,7 @@ import { db } from '../db/db';
 import { format } from 'date-fns';
 
 export async function getBackupData() {
-  const [settings, customers, invoices, invoiceItems, columnTemplates, expenses, payments, bills] =
+  const [settings, customers, invoices, invoiceItems, columnTemplates, expenses, payments, bills, calendarEvents] =
     await Promise.all([
       db.settings.toArray(),
       db.customers.toArray(),
@@ -12,12 +12,13 @@ export async function getBackupData() {
       db.expenses.toArray(),
       db.payments.toArray(),
       db.bills.toArray(),
+      db.calendarEvents.toArray(),
     ]);
 
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
-    settings, customers, invoices, invoiceItems, columnTemplates, expenses, payments, bills,
+    settings, customers, invoices, invoiceItems, columnTemplates, expenses, payments, bills, calendarEvents,
   };
 }
 
@@ -41,7 +42,7 @@ export async function importBackup(file: File): Promise<void> {
 
   await db.transaction('rw',
     [db.settings, db.customers, db.invoices, db.invoiceItems,
-     db.columnTemplates, db.expenses, db.payments],
+     db.columnTemplates, db.expenses, db.payments, db.bills, db.calendarEvents],
     async () => {
       await db.settings.clear();
       await db.customers.clear();
@@ -50,14 +51,18 @@ export async function importBackup(file: File): Promise<void> {
       await db.columnTemplates.clear();
       await db.expenses.clear();
       await db.payments.clear();
+      await db.bills.clear();
+      await db.calendarEvents.clear();
 
-      if (data.settings?.length)       await db.settings.bulkAdd(data.settings);
-      if (data.customers?.length)      await db.customers.bulkAdd(data.customers);
-      if (data.invoices?.length)       await db.invoices.bulkAdd(data.invoices);
-      if (data.invoiceItems?.length)   await db.invoiceItems.bulkAdd(data.invoiceItems);
+      if (data.settings?.length)        await db.settings.bulkAdd(data.settings);
+      if (data.customers?.length)       await db.customers.bulkAdd(data.customers);
+      if (data.invoices?.length)        await db.invoices.bulkAdd(data.invoices);
+      if (data.invoiceItems?.length)    await db.invoiceItems.bulkAdd(data.invoiceItems);
       if (data.columnTemplates?.length) await db.columnTemplates.bulkAdd(data.columnTemplates);
-      if (data.expenses?.length)       await db.expenses.bulkAdd(data.expenses);
-      if (data.payments?.length)       await db.payments.bulkAdd(data.payments);
+      if (data.expenses?.length)        await db.expenses.bulkAdd(data.expenses);
+      if (data.payments?.length)        await db.payments.bulkAdd(data.payments);
+      if (data.bills?.length)           await db.bills.bulkAdd(data.bills);
+      if (data.calendarEvents?.length)  await db.calendarEvents.bulkAdd(data.calendarEvents);
     }
   );
 }
