@@ -4,7 +4,7 @@ import type { ColumnTemplate } from '../db/types';
 
 export function useColumns() {
   const columns = useLiveQuery(
-    () => db.columnTemplates.where('isActive').equals(1).sortBy('sortOrder'),
+    () => db.columnTemplates.toCollection().filter(c => c.isActive === true).sortBy('sortOrder'),
     []
   ) ?? [];
   return columns;

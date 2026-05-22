@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +24,8 @@ export default function Profile() {
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const [logoDirty, setLogoDirty] = useState(false);
+
   const { register, handleSubmit, reset, formState: { errors, isDirty, isSubmitting } } = useForm<FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema) as any,
@@ -45,17 +47,24 @@ export default function Profile() {
     await updateSettings(data);
     toast('success', 'Shop profile saved');
     reset(data);
+    setLogoDirty(false);
   };
 
   const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => updateSettings({ logoBase64: reader.result as string });
+    reader.onload = () => {
+      updateSettings({ logoBase64: reader.result as string });
+      setLogoDirty(true);
+    };
     reader.readAsDataURL(file);
   };
 
-  const removeLogo = () => updateSettings({ logoBase64: '' });
+  const removeLogo = () => {
+    updateSettings({ logoBase64: '' });
+    setLogoDirty(true);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -118,7 +127,7 @@ export default function Profile() {
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" loading={isSubmitting} disabled={!isDirty}>Save Profile</Button>
+        <Button type="submit" loading={isSubmitting} disabled={!isDirty && !logoDirty}>Save Profile</Button>
       </div>
     </form>
   );
