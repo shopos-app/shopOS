@@ -12,6 +12,7 @@ import InvoiceList      from './pages/Invoices/InvoiceList';
 import BillsTracker     from './pages/BillsTracker';
 import Expenses         from './pages/Expenses';
 import CustomerList     from './pages/Customers/CustomerList';
+import CustomerDetail  from './pages/Customers/CustomerDetail';
 import SettingsLayout   from './pages/Settings/SettingsLayout';
 import Profile          from './pages/Settings/Profile';
 import Columns          from './pages/Settings/Columns';
@@ -50,7 +51,8 @@ export default function App() {
               <Route path="invoices"  element={<InvoiceList />} />
               <Route path="bills"     element={<BillsTracker />} />
               <Route path="expenses"  element={<Expenses />} />
-              <Route path="customers" element={<CustomerList />} />
+              <Route path="customers"    element={<CustomerList />} />
+              <Route path="customers/:id" element={<CustomerDetail />} />
               <Route path="settings"  element={<SettingsLayout />}>
                 <Route index           element={<Profile />} />
                 <Route path="columns"    element={<Columns />} />
