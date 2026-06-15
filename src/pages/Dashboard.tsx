@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Plus, AlertTriangle, FileText, TrendingUp } from 'lucide-react';
+import { Plus, AlertTriangle, TrendingUp } from 'lucide-react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -25,10 +25,9 @@ interface StatCardProps {
   value:     string;
   sub?:      string;
   color?:    'default' | 'primary' | 'success' | 'warning' | 'danger';
-  icon?:     React.ReactNode;
 }
 
-function StatCard({ label, value, sub, color = 'default', icon }: StatCardProps) {
+function StatCard({ label, value, sub, color = 'default' }: StatCardProps) {
   const valueColor = {
     default: 'text-[var(--text-primary)]',
     primary: 'text-[var(--primary)]',
@@ -112,14 +111,12 @@ export default function Dashboard() {
           value={formatCurrency(monthlyBilled)}
           sub="Total invoiced"
           color="primary"
-          icon={<TrendingUp className="w-4 h-4" />}
         />
         <StatCard
           label="Collected This Month"
           value={formatCurrency(monthlyCollected)}
           sub="Payments received"
           color={monthlyCollected >= monthlyBilled && monthlyBilled > 0 ? 'success' : 'default'}
-          icon={<FileText className="w-4 h-4" />}
         />
         <StatCard
           label="Total Outstanding"
