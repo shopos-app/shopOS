@@ -62,34 +62,34 @@ export function Sidebar() {
               to={to}
               end={to === '/'}
               className={({ isActive }) => cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-[220ms]',
                 isActive
-                  ? 'bg-[var(--sidebar-active)] text-white font-semibold shadow-sm'
-                  : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white/8 text-white shadow-[inset_2px_0_0_var(--sidebar-accent)]'
+                  : 'text-white/35 hover:bg-white/5 hover:text-white/75'
               )}
             >
-              <Icon className="w-5 h-5 shrink-0" />
+              <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
               {label}
             </NavLink>
           ))}
         </nav>
 
         {/* Bottom actions */}
-        <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
+        <div className="px-3 py-4 border-t border-white/8 space-y-0.5">
           {/* Notifications bell */}
           <button
             onClick={() => setPanelOpen(v => !v)}
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full relative',
+              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-[220ms] w-full relative',
               panelOpen
-                ? 'bg-white/15 text-white'
-                : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                ? 'bg-white/8 text-white shadow-[inset_2px_0_0_var(--sidebar-accent)]'
+                : 'text-white/35 hover:bg-white/5 hover:text-white/75'
             )}
           >
             <span className="relative">
-              <Bell className="w-5 h-5 shrink-0" />
+              <Bell className="w-4 h-4 shrink-0" strokeWidth={1.75} />
               {total > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[var(--danger)] rounded-full text-[10px] font-bold text-white flex items-center justify-center leading-none">
+                <span className="absolute -top-1 -right-1.5 w-3.5 h-3.5 bg-[var(--danger)] rounded-full text-[9px] font-bold text-white flex items-center justify-center leading-none">
                   {total > 9 ? '9+' : total}
                 </span>
               )}
@@ -99,24 +99,24 @@ export function Sidebar() {
 
           <button
             onClick={cycleTheme}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-colors w-full"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white/35 hover:bg-white/5 hover:text-white/75 transition-all duration-[220ms] w-full"
           >
             {resolvedTheme === 'dark'
-              ? <><Sun className="w-5 h-5" /> Light mode</>
-              : <><Moon className="w-5 h-5" /> Dark mode</>
+              ? <><Sun className="w-4 h-4" strokeWidth={1.75} /> Light mode</>
+              : <><Moon className="w-4 h-4" strokeWidth={1.75} /> Dark mode</>
             }
           </button>
 
           <NavLink
             to="/settings"
             className={({ isActive }) => cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-[220ms]',
               isActive
-                ? 'bg-[var(--sidebar-active)] text-white font-semibold'
-                : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                ? 'bg-white/8 text-white shadow-[inset_2px_0_0_var(--sidebar-accent)]'
+                : 'text-white/35 hover:bg-white/5 hover:text-white/75'
             )}
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4" strokeWidth={1.75} />
             Settings
           </NavLink>
         </div>

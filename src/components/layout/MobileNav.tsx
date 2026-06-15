@@ -27,8 +27,8 @@ export function MobileNav() {
               to={to}
               end={to === '/'}
               className={({ isActive }) => cn(
-                'flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-colors min-w-0',
-                isActive ? 'text-[var(--sidebar-active)]' : 'text-slate-500'
+                'flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-[220ms] min-w-0',
+                isActive ? 'text-[var(--sidebar-accent)]' : 'text-white/35'
               )}
             >
               <Icon className="w-5 h-5" />
@@ -41,7 +41,7 @@ export function MobileNav() {
             onClick={() => setPanelOpen(v => !v)}
             className={cn(
               'flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-colors relative',
-              panelOpen ? 'text-[var(--sidebar-active)]' : 'text-slate-500'
+              panelOpen ? 'text-[var(--sidebar-accent)]' : 'text-white/35'
             )}
           >
             <span className="relative">

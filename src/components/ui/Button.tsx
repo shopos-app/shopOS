@@ -12,13 +12,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 }
 
-const base = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]';
+const base = [
+  'inline-flex items-center justify-center gap-2 font-medium rounded-lg',
+  'transition-all duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+  'disabled:opacity-45 disabled:cursor-not-allowed',
+  'active:scale-[0.97]',
+].join(' ');
 
 const variants: Record<Variant, string> = {
   primary:   'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] focus-visible:ring-[var(--primary)]',
-  secondary: 'bg-transparent border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]',
+  secondary: 'bg-transparent border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)]',
   ghost:     'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]',
-  danger:    'bg-[var(--danger)] text-white hover:bg-red-700 focus-visible:ring-[var(--danger)]',
+  danger:    'bg-[var(--danger)] text-white hover:brightness-110 focus-visible:ring-[var(--danger)]',
 };
 
 const sizes: Record<Size, string> = {

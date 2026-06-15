@@ -23,12 +23,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             'rounded-lg border bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)]',
             'placeholder:text-[var(--text-muted)]',
+            'transition-all duration-[220ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
             'focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
-            'transition-colors',
+            'disabled:opacity-45 disabled:cursor-not-allowed',
             error
               ? 'border-[var(--danger)] focus:ring-[var(--danger)]'
-              : 'border-[var(--border)]',
+              : 'border-[var(--border)] hover:border-[var(--border-strong)]',
             className
           )}
           {...props}

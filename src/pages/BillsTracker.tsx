@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Receipt, Plus, Pencil, Trash2, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Receipt, Plus, Pencil, Trash2, CheckCircle2, RotateCcw, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { useBills, addBill, updateBill, deleteBill, markBillPaid, markBillUnpaid } from '../hooks/useBills';
 import { Button } from '../components/ui/Button';
@@ -9,6 +9,7 @@ import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useToast } from '../components/ui/Toast';
+import { DateRangeFilter, getPeriodRange, isInDateRange, type PeriodKey } from '../components/ui/DateRangeFilter';
 import { formatCurrency } from '../utils/currency';
 import { formatDate } from '../utils/dates';
 import { cn } from '../utils/cn';
@@ -115,10 +116,16 @@ export default function BillsTracker() {
   const { toast }  = useToast();
 
   const [filter,       setFilter]       = useState<FilterValue>('all');
+  const [search,       setSearch]       = useState('');
+  const [period,       setPeriod]       = useState<PeriodKey>('all');
+  const [customStart,  setCustomStart]  = useState('');
+  const [customEnd,    setCustomEnd]    = useState('');
   const [showForm,     setShowForm]     = useState(false);
   const [editing,      setEditing]      = useState<Bill | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Bill | undefined>();
   const [deleting,     setDeleting]     = useState(false);
+
+  const dateRange = getPeriodRange(period, customStart, customEnd);
 
   const pendingBills = bills.filter(b => b.status === 'pending');
   const overdueBills = bills.filter(isBillOverdue);
@@ -127,9 +134,12 @@ export default function BillsTracker() {
 
   const filtered = bills.filter(b => {
     const overdue = isBillOverdue(b);
-    if (filter === 'pending') return b.status === 'pending' && !overdue;
-    if (filter === 'overdue') return overdue;
-    if (filter === 'paid')    return b.status === 'paid';
+    if (filter === 'pending' && !(b.status === 'pending' && !overdue)) return false;
+    if (filter === 'overdue' && !overdue) return false;
+    if (filter === 'paid'    && b.status !== 'paid') return false;
+    if (!isInDateRange(b.dueDate, dateRange)) return false;
+    const q = search.toLowerCase().trim();
+    if (q && !b.vendorName.toLowerCase().includes(q) && !b.description.toLowerCase().includes(q)) return false;
     return true;
   });
 
@@ -186,19 +196,19 @@ export default function BillsTracker() {
       {bills.length > 0 && (
         <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
           <Card>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Pending</p>
+            <p className="text-xs font-medium text-[var(--text-muted)] mb-1">Pending</p>
             <p className="text-xl md:text-2xl font-bold tabular-nums text-[var(--warning)]">{formatCurrency(totalPending)}</p>
             <p className="text-xs text-[var(--text-muted)] mt-1">{pendingBills.length} bill{pendingBills.length !== 1 ? 's' : ''}</p>
           </Card>
           <Card>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Overdue</p>
+            <p className="text-xs font-medium text-[var(--text-muted)] mb-1">Overdue</p>
             <p className={cn('text-xl md:text-2xl font-bold tabular-nums', totalOverdue > 0 ? 'text-[var(--danger)]' : 'text-[var(--text-primary)]')}>
               {formatCurrency(totalOverdue)}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-1">{overdueBills.length} bill{overdueBills.length !== 1 ? 's' : ''}</p>
           </Card>
           <Card>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Total</p>
+            <p className="text-xs font-medium text-[var(--text-muted)] mb-1">Total</p>
             <p className="text-xl md:text-2xl font-bold tabular-nums text-[var(--text-primary)]">{bills.length}</p>
             <p className="text-xs text-[var(--text-muted)] mt-1">{bills.filter(b => b.status === 'paid').length} paid</p>
           </Card>
@@ -217,8 +227,8 @@ export default function BillsTracker() {
 
       {bills.length > 0 && (
         <>
-          {/* Filter chips */}
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
+          {/* Status filter chips */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             {FILTERS.map(f => (
               <button
                 key={f.value}
@@ -235,8 +245,29 @@ export default function BillsTracker() {
             ))}
           </div>
 
+          {/* Date range + Search row */}
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <DateRangeFilter
+              period={period}
+              onPeriodChange={setPeriod}
+              customStart={customStart}
+              customEnd={customEnd}
+              onCustomStartChange={setCustomStart}
+              onCustomEndChange={setCustomEnd}
+            />
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by vendor or description…"
+                className="w-full pl-9 pr-4 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+              />
+            </div>
+          </div>
+
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-sm text-[var(--text-muted)]">No bills match this filter.</div>
+            <div className="text-center py-12 text-sm text-[var(--text-muted)]">No bills match your filters.</div>
           )}
 
           {filtered.length > 0 && (
@@ -245,11 +276,11 @@ export default function BillsTracker() {
               {/* ── Desktop table ── */}
               <div className="hidden md:block">
                 <div className="grid grid-cols-12 gap-3 px-4 py-2.5 bg-[var(--bg-elevated)] border-b border-[var(--border)]">
-                  <span className="col-span-3 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Vendor</span>
-                  <span className="col-span-3 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Description</span>
-                  <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Due Date</span>
-                  <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide text-right">Amount</span>
-                  <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide text-right">Actions</span>
+                  <span className="col-span-3 text-xs font-medium text-[var(--text-muted)]">Vendor</span>
+                  <span className="col-span-3 text-xs font-medium text-[var(--text-muted)]">Description</span>
+                  <span className="col-span-2 text-xs font-medium text-[var(--text-muted)]">Due date</span>
+                  <span className="col-span-2 text-xs font-medium text-[var(--text-muted)] text-right">Amount</span>
+                  <span className="col-span-2 text-xs font-medium text-[var(--text-muted)] text-right">Actions</span>
                 </div>
 
                 {filtered.map((bill, i) => {
@@ -285,21 +316,21 @@ export default function BillsTracker() {
                         <button
                           title={bill.status === 'paid' ? 'Mark as pending' : 'Mark as paid'}
                           onClick={() => togglePaid(bill)}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--success)] hover:bg-[var(--success-subtle,#f0fdf4)] transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--success)] hover:bg-[var(--success-subtle)] transition-colors"
                         >
                           {bill.status === 'paid' ? <RotateCcw className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                         </button>
                         <button
                           title="Edit"
                           onClick={() => { setEditing(bill); setShowForm(true); }}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)] hover:bg-opacity-10 transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-subtle)] transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
                           title="Delete"
                           onClick={() => setDeleteTarget(bill)}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger-subtle,#fef2f2)] transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger-subtle)] transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -340,19 +371,19 @@ export default function BillsTracker() {
                         <button
                           title={bill.status === 'paid' ? 'Mark as pending' : 'Mark as paid'}
                           onClick={() => togglePaid(bill)}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--success)] hover:bg-[var(--success-subtle,#f0fdf4)] transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--success)] hover:bg-[var(--success-subtle)] transition-colors"
                         >
                           {bill.status === 'paid' ? <RotateCcw className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
                         </button>
                         <button
                           onClick={() => { setEditing(bill); setShowForm(true); }}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)] hover:bg-opacity-10 transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-subtle)] transition-colors"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(bill)}
-                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger-subtle,#fef2f2)] transition-colors"
+                          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger-subtle)] transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

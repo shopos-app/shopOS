@@ -38,17 +38,10 @@ function StatCard({ label, value, sub, color = 'default', icon }: StatCardProps)
   }[color];
 
   return (
-    <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border)] p-5 shadow-sm dark:shadow-none">
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">{label}</p>
-        {icon && (
-          <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] flex items-center justify-center text-[var(--text-muted)]">
-            {icon}
-          </div>
-        )}
-      </div>
-      <p className={cn('text-2xl font-bold tabular-nums leading-none', valueColor)}>{value}</p>
-      {sub && <p className="text-xs text-[var(--text-muted)] mt-1.5">{sub}</p>}
+    <div className="bg-[var(--bg-surface)] rounded-2xl p-5 shadow-[var(--shadow-card)]">
+      <p className="text-xs font-medium text-[var(--text-muted)] mb-3">{label}</p>
+      <p className={cn('text-3xl font-semibold tabular-nums leading-none tracking-tight', valueColor)}>{value}</p>
+      {sub && <p className="text-xs text-[var(--text-muted)] mt-2">{sub}</p>}
     </div>
   );
 }
@@ -144,7 +137,7 @@ export default function Dashboard() {
 
       {/* ── Overdue alert ── */}
       {overdueInvoices.length > 0 && (
-        <div className="bg-[var(--danger-subtle,#fef2f2)] border border-[var(--danger)] border-opacity-30 rounded-xl p-4">
+        <div className="bg-[var(--danger-subtle)] rounded-2xl p-4 ring-1 ring-[var(--danger)]/30">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-[var(--danger)] shrink-0" />
             <p className="text-sm font-semibold text-[var(--danger)]">
@@ -180,7 +173,7 @@ export default function Dashboard() {
 
       {/* ── Chart ── */}
       {hasAnyData && (
-        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border)] p-5 shadow-sm dark:shadow-none">
+        <div className="bg-[var(--bg-surface)] rounded-2xl p-5 shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-base font-semibold text-[var(--text-primary)]">Revenue Overview</h2>
@@ -192,16 +185,16 @@ export default function Dashboard() {
             <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradBilled" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#3B82F6" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#2D7255" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#2D7255" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradCollected" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#22C55E" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#16A34A" stopOpacity={0.20} />
+                  <stop offset="95%" stopColor="#16A34A" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#F97316" stopOpacity={0.20} />
-                  <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#D97706" stopOpacity={0.18} />
+                  <stop offset="95%" stopColor="#D97706" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -236,7 +229,7 @@ export default function Dashboard() {
                 type="monotone"
                 dataKey="billed"
                 name="Billed"
-                stroke="#3B82F6"
+                stroke="#2D7255"
                 strokeWidth={2}
                 fill="url(#gradBilled)"
                 dot={false}
@@ -246,7 +239,7 @@ export default function Dashboard() {
                 type="monotone"
                 dataKey="collected"
                 name="Collected"
-                stroke="#22C55E"
+                stroke="#16A34A"
                 strokeWidth={2}
                 fill="url(#gradCollected)"
                 dot={false}
@@ -256,7 +249,7 @@ export default function Dashboard() {
                 type="monotone"
                 dataKey="expenses"
                 name="Expenses"
-                stroke="#F97316"
+                stroke="#D97706"
                 strokeWidth={2}
                 fill="url(#gradExpenses)"
                 dot={false}
@@ -269,7 +262,7 @@ export default function Dashboard() {
 
       {/* ── Bottom section: recent invoices ── */}
       {recentInvoices.length > 0 && (
-        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border)] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="bg-[var(--bg-surface)] rounded-2xl shadow-[var(--shadow-card)] overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
             <h2 className="text-base font-semibold text-[var(--text-primary)]">Recent Invoices</h2>
             <button

@@ -10,7 +10,7 @@ const styles: Record<string, string> = {
   draft:   'bg-[var(--neutral-subtle)] text-[var(--neutral)]',
   unpaid:  'bg-[var(--warning-subtle)] text-[var(--warning)]',
   overdue: 'bg-[var(--danger-subtle)] text-[var(--danger)]',
-  partial: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400',
+  partial: 'bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-400',
   paid:    'bg-[var(--success-subtle)] text-[var(--success)]',
   pending: 'bg-[var(--warning-subtle)] text-[var(--warning)]',
 };
@@ -27,7 +27,7 @@ const labels: Record<string, string> = {
 export function Badge({ status, className }: BadgeProps) {
   return (
     <span className={cn(
-      'inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium',
+      'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tracking-wide',
       styles[status] ?? styles.draft,
       className
     )}>

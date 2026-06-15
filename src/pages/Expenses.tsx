@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Wallet, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, subMonths, addMonths, isWithinInterval } from 'date-fns';
+import { Wallet, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { format } from 'date-fns';
 import { useExpenses, addExpense, updateExpense, deleteExpense } from '../hooks/useExpenses';
 import { useSettingsValue } from '../hooks/useSettings';
 import { Button } from '../components/ui/Button';
@@ -9,6 +9,7 @@ import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useToast } from '../components/ui/Toast';
+import { DateRangeFilter, getPeriodRange, isInDateRange, type PeriodKey } from '../components/ui/DateRangeFilter';
 import { formatCurrency } from '../utils/currency';
 import { formatDate } from '../utils/dates';
 import { cn } from '../utils/cn';
@@ -60,19 +61,10 @@ function ExpenseFormModal({ open, onClose, initial, categories }: FormModalProps
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={isEdit ? 'Edit Expense' : 'Add Expense'}
-    >
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Expense' : 'Add Expense'}>
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
-          <Input
-            label="Date"
-            type="date"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-          />
+          <Input label="Date" type="date" value={date} onChange={e => setDate(e.target.value)} />
           <div>
             <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">Category</label>
             <select
@@ -117,36 +109,40 @@ export default function Expenses() {
 
   const categories = settings?.expenseCategories ?? ['Materials', 'Rent', 'Utilities', 'Tools', 'Other'];
 
-  const [viewMonth,     setViewMonth]     = useState(new Date());
-  const [catFilter,     setCatFilter]     = useState('all');
-  const [showForm,      setShowForm]      = useState(false);
-  const [editing,       setEditing]       = useState<Expense | undefined>();
-  const [deleteTarget,  setDeleteTarget]  = useState<Expense | undefined>();
-  const [deleting,      setDeleting]      = useState(false);
+  const [period,        setPeriod]       = useState<PeriodKey>('this-month');
+  const [customStart,   setCustomStart]  = useState('');
+  const [customEnd,     setCustomEnd]    = useState('');
+  const [catFilter,     setCatFilter]    = useState('all');
+  const [search,        setSearch]       = useState('');
+  const [showForm,      setShowForm]     = useState(false);
+  const [editing,       setEditing]      = useState<Expense | undefined>();
+  const [deleteTarget,  setDeleteTarget] = useState<Expense | undefined>();
+  const [deleting,      setDeleting]     = useState(false);
 
-  // ── Month-filtered expenses ──
-  const monthStart = startOfMonth(viewMonth);
-  const monthEnd   = endOfMonth(viewMonth);
+  const dateRange = getPeriodRange(period, customStart, customEnd);
 
-  const monthExpenses = useMemo(
-    () => expenses.filter(e => isWithinInterval(new Date(e.date), { start: monthStart, end: monthEnd })),
-    [expenses, viewMonth]
+  const periodExpenses = useMemo(
+    () => expenses.filter(e => isInDateRange(e.date, dateRange)),
+    [expenses, period, customStart, customEnd]
   );
 
-  const filtered = catFilter === 'all'
-    ? monthExpenses
-    : monthExpenses.filter(e => e.category === catFilter);
+  const filtered = useMemo(() => {
+    return periodExpenses.filter(e => {
+      if (catFilter !== 'all' && e.category !== catFilter) return false;
+      const q = search.toLowerCase().trim();
+      if (q && !e.description.toLowerCase().includes(q) && !e.category.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [periodExpenses, catFilter, search]);
 
   // ── Stats ──
-  const monthTotal = monthExpenses.reduce((s, e) => s + e.amount, 0);
+  const periodTotal = periodExpenses.reduce((s, e) => s + e.amount, 0);
 
   const byCategory = useMemo(() => {
     const map: Record<string, number> = {};
-    monthExpenses.forEach(e => {
-      map[e.category] = (map[e.category] ?? 0) + e.amount;
-    });
+    periodExpenses.forEach(e => { map[e.category] = (map[e.category] ?? 0) + e.amount; });
     return Object.entries(map).sort((a, b) => b[1] - a[1]);
-  }, [monthExpenses]);
+  }, [periodExpenses]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
@@ -163,7 +159,7 @@ export default function Expenses() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -175,44 +171,41 @@ export default function Expenses() {
         </Button>
       </div>
 
-      {/* Month navigator */}
-      <div className="flex items-center justify-between mb-5">
-        <button
-          onClick={() => setViewMonth(prev => subMonths(prev, 1))}
-          className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-colors text-[var(--text-secondary)]"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <h2 className="text-base font-semibold text-[var(--text-primary)]">
-          {format(viewMonth, 'MMMM yyyy')}
-        </h2>
-        <button
-          onClick={() => setViewMonth(prev => addMonths(prev, 1))}
-          className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] transition-colors text-[var(--text-secondary)]"
-          disabled={startOfMonth(addMonths(viewMonth, 1)) > new Date()}
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
+      {/* Date range + Search row */}
+      <div className="flex items-center gap-2 mb-5 flex-wrap">
+        <DateRangeFilter
+          period={period}
+          onPeriodChange={setPeriod}
+          customStart={customStart}
+          customEnd={customEnd}
+          onCustomStartChange={setCustomStart}
+          onCustomEndChange={setCustomEnd}
+        />
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by description or category…"
+            className="w-full pl-9 pr-4 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+          />
+        </div>
       </div>
 
       {/* Stats */}
-      {monthExpenses.length > 0 && (
+      {periodExpenses.length > 0 && (
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Card>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">
-              Total This Month
-            </p>
+            <p className="text-xs font-medium text-[var(--text-muted)] mb-1">Total this period</p>
             <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)]">
-              {formatCurrency(monthTotal)}
+              {formatCurrency(periodTotal)}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-1">
-              {monthExpenses.length} expense{monthExpenses.length !== 1 ? 's' : ''}
+              {periodExpenses.length} expense{periodExpenses.length !== 1 ? 's' : ''}
             </p>
           </Card>
           <Card>
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-2">
-              Top Categories
-            </p>
+            <p className="text-xs font-medium text-[var(--text-muted)] mb-2">Top categories</p>
             <div className="space-y-1.5">
               {byCategory.slice(0, 3).map(([cat, amt]) => (
                 <div key={cat} className="flex items-center justify-between">
@@ -268,17 +261,17 @@ export default function Expenses() {
             ))}
           </div>
 
-          {/* No results for this month */}
-          {monthExpenses.length === 0 && (
+          {/* No results for period */}
+          {periodExpenses.length === 0 && (
             <div className="text-center py-12 text-sm text-[var(--text-muted)]">
-              No expenses in {format(viewMonth, 'MMMM yyyy')}.
+              No expenses in this period.
             </div>
           )}
 
           {/* Filtered empty */}
-          {monthExpenses.length > 0 && filtered.length === 0 && (
+          {periodExpenses.length > 0 && filtered.length === 0 && (
             <div className="text-center py-12 text-sm text-[var(--text-muted)]">
-              No "{catFilter}" expenses this month.
+              No expenses match your filters.
             </div>
           )}
 
@@ -286,10 +279,10 @@ export default function Expenses() {
           {filtered.length > 0 && (
             <div className="rounded-xl border border-[var(--border)] overflow-hidden">
               <div className="grid grid-cols-12 gap-3 px-4 py-2.5 bg-[var(--bg-elevated)] border-b border-[var(--border)]">
-                <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Date</span>
-                <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Category</span>
-                <span className="col-span-5 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Description</span>
-                <span className="col-span-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide text-right">Amount</span>
+                <span className="col-span-2 text-xs font-medium text-[var(--text-muted)]">Date</span>
+                <span className="col-span-2 text-xs font-medium text-[var(--text-muted)]">Category</span>
+                <span className="col-span-5 text-xs font-medium text-[var(--text-muted)]">Description</span>
+                <span className="col-span-2 text-xs font-medium text-[var(--text-muted)] text-right">Amount</span>
                 <span className="col-span-1" />
               </div>
 
@@ -338,10 +331,10 @@ export default function Expenses() {
                 </div>
               ))}
 
-              {/* Month subtotal row */}
+              {/* Period subtotal row */}
               <div className="grid grid-cols-12 gap-3 px-4 py-3 bg-[var(--bg-elevated)] border-t border-[var(--border)]">
-                <div className="col-span-9 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
-                  {catFilter === 'all' ? 'Month Total' : `${catFilter} Total`}
+                <div className="col-span-9 text-xs font-medium text-[var(--text-muted)]">
+                  {catFilter === 'all' ? 'Period total' : `${catFilter} total`}
                 </div>
                 <div className="col-span-2 text-right">
                   <p className="text-sm tabular-nums font-bold text-[var(--text-primary)]">
@@ -374,12 +367,7 @@ export default function Expenses() {
       >
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeleteTarget(undefined)}>Cancel</Button>
-          <Button
-            variant="danger"
-            loading={deleting}
-            icon={<Trash2 className="w-4 h-4" />}
-            onClick={handleDelete}
-          >
+          <Button variant="danger" loading={deleting} icon={<Trash2 className="w-4 h-4" />} onClick={handleDelete}>
             Delete
           </Button>
         </div>
